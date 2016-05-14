@@ -1,0 +1,28 @@
+hopfield([[+1,+1,-1],[-1,-1,-1]],W).
+hopfield([[+1,-1,-1,+1], [-1,-1,+1,-1],[+1,+1,+1,+1]],W).
+hopfield([[+1,+1,+1,+1,-1,+1,+1,+1,+1], [-1,+1,-1,-1,+1,-1,-1,+1,-1], [+1,-1,+1,+1,+1,+1,-1,-1,+1]],W).
+
+
+remote([3,1,3,3],5,L,C).
+remote([2,2],3,L,C).
+remote([2,5,1,6,4,2,6],8,L,C).
+remote([1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4,3,2,1,2,3,4],5,L,C).
+remote([4,2],9,L,C).
+remote([1,93,185],1000,L,C), length(L,N).
+remote([100,170,170,170],1000,L,C), length(L,N).
+remote([100,170,170,156],10000,L,C), length(L,N).
+
+seed(1), color_graph(10, 80, Col, C).
+seed(2016), color_graph(15, 60, Col, C).
+seed(12345), color_graph(20, 70, Col, C).
+seed(1000), color_graph(25, 50, Col, C).
+seed(9876), color_graph(50, 20, Col, C).
+seed(10), color_graph(40, 34, Col, C).
+seed(1111), color_graph(60, 30, Col, C).
+seed(171717), color_graph(100, 20, Col, C).
+
+games([4, -1, -2, 3], 5, 2, Gs, P).
+games([3, -2, 4, -5, 2, 0, 4, -1, 3, 4], 5, 2, Gs, P).
+games([1, 2, 3, 4, 5, 0, -1, -2, -3, -4, -5],
+ 5, 4, Gs, P).
+ games([2, 7, -1, 5, 0, 2, 1, 4, 3], 8, 5, Gs, P).
