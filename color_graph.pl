@@ -2,10 +2,12 @@
 
 color_graph(N, D, Col, C) :-
    create_graph(N, D, Graph),
-   writeln(Graph),
    length(Sol, N),
    color_graph1(N, Sol, Graph, N, C, Col).
 
+/*Iterate for every possible chromatic num, until there's no other solution
+ *The last solution found will be the optimal.
+ */
 color_graph1(N, Sol, Graph, 1, 1, [1]) :- N =:= 1.
 color_graph1(N, Sol, Graph, 1, C, Sol) :- N =\= 1.
 color_graph1(N, Sol, Graph, T, C, List2) :-
@@ -14,23 +16,19 @@ color_graph1(N, Sol, Graph, T, C, List2) :-
    Z is T - 1,
    color_graph1(N, Solx, Graph, Z, C, List2).
 color_graph1(N, Sol, Graph, T, C, Sol) :- C is T + 1.
-/*
-color_graph1(N, Sol, Graph, N, 1, [1]) :-
-   N =:= 1.
-color_graph1(N, Sol, Graph, N, T, Sol) :-
-   N > 1,
-   one_between(2, N, T),
-   color_graph2(N, Sol, Graph, T), !.
-*/
 
 one_between(X, Y, X) :- X =< Y.
 one_between(X, Y, Z) :- X < Y, X1 is X + 1, one_between(X1, Y, Z).
 
+/*find a solution for a specific Chromatic number*/
 color_graph2(N, Solution, Graph, C):-
    Solution #:: 1..C,
    constraints(Solution, Graph),
    search(Solution, 0, first_fail, indomain, complete, []).
 
+/*Constraints definition
+ *Two neighbors can not have the same color
+ */
 constraints(_, []).
 constraints(Vertices, [V1 - V2|Graph]) :-
    getnth(V1, Vertices, X1),
@@ -44,9 +42,6 @@ getnth(N, [_|Vertices], Vertex) :-
    T is N - 1,
    getnth(T, Vertices, Vertex).
 
-
-min1(List1, X, List2, Y, List1, X) :- X < Y.
-min1(List1, X, List2, Y, List2, Y) :- X >= Y.
 
 create_graph(NNodes, Density, Graph) :-
    cr_gr(1, 2, NNodes, Density, [], Graph).
