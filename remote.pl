@@ -24,48 +24,6 @@ distances(Starter, N, X, T) :- X > 1,
 							append([[X, Xdist]], Y, T).
 
 
-quicksort(List, Sorted) :-
-	quicksort2(List, Sorted-[]).
-
-quicksort2([], Z-Z).
-quicksort2([[X,Z]|Tail], A1-Z2) :-
-	split(Z, Tail, Small, Big),
-	quicksort2(Small, A1-[[X,Z]|A2]),
-	quicksort2(Big, A2-Z2).
-
-split(X, [], [], []).
-split(X, [[Z,Y]|Tail], [[Z,Y]|Small], Big) :-
-	X > Y,
-	!,
-	split(X, Tail, Small, Big).
-split(X, [[Z,Y]|Tail], Small, [[Z,Y]|Big]) :-
-	split(X, Tail, Small, Big).
-
-/*quicksort([], []).
-quicksort([[X,Z]|Tail], Sorted) :-
-	split(Z, Tail, Small, Big),
-	quicksort(Small, SortedSmall),
-	quicksort(Big, SortedBig), append(SortedSmall, [[X,Z]], TempL),
-	append(TempL, SortedBig, Sorted).
-*/
-
-
-/*
-quicksort([],[]).
-quicksort([[X,Z]|Xs], Ys) :- partition(Xs, Z, Left, Right), quicksort(Left, Ls), quicksort(Right, Rs), append([[X,Z]], Rs, Temp), append(Ls, [Temp], Ys).
-
-partition([[X,Z]|Xs], Y, [[X,Z]|Ls], Rs) :- Z <= Y, partition(Xs, Y, Ls, Rs).
-partition([[X,Z]|Xs], Y, Ls, [[X,Z]|Rs]) :- Z > Y, partition(Xs, Y, Ls, Rs).
-partition([],Y,[],[]).
-*/
-
-/*
-insertsorted([Chan, Dist], [], [[Chan, Dist]]).
-insertsorted([Chan, Dist], [[X, Y]|Xs], [[Chan, Dist], [X,Y]|Xs]) :- Dist < Y, !.
-insertsorted([Chan, Dist], [[X, Y]|Xs], [[X, Y]|Z]) :- Dist >= Y,
-													insertsorted([Chan, Dist], Xs, Z).
-*/
-
 changes(Starter, Len, Chans, [[X, Y]|_], [[], X]) :- checklist(Starter, X, Check), Check =:= 1.
 changes(Starter, Len, Chans, [[X, Y]|_], [Changes, X]) :- checklist(Starter, X, Check), Check =:= -1, findchanges(Starter, Len, Chans, X, Y, Changes), length(Changes, U), U =:= Y.
 changes(Starter, Len, Chans, [[X, Y]|Xs], D) :- checklist(Starter, X, Check), Check =:= -1, findchanges(Starter, Len, Chans, X, Y, Changes), length(Changes, U), U =\= Y,

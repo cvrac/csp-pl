@@ -2,7 +2,7 @@
 :- lib(branch_and_bound).
 
 /* First find the optimal solution, and then
- * find all the solutions and keep those which have the maximum pleasure
+ * and then find the solutions with the maximum pleasure
  */
 games_csp(Ps, Capacity, Win, Ts, P):-
 	length(Ps, N),
