@@ -1,8 +1,4 @@
-/*exw ulopoiisei to games me 2 tropous. O enas einai o dilwtikos, me xrisi tou \+.
- *O deuteros einai o diadikastikos, opou vriskw prwta ti megisti euxaristisi pou mporei na uparxei
- *kai me vasi auti xtizw ti lista lusi sti sunexeia.
- *Kai stis 2 periptwseis, xrisimopoiw ena voithitiko katigorima games1.
- */
+/*Implemented both with the procedural and the \+ way*/
 
 %games(Ps, T, K, Gs, P) :- games1(Ps, T, T, K, Gs, P), \+ (games1(Ps, T,  T, K, Ggs, Pz), Pz > P).
 games(Ps, T, K, Gs, P) :- find_max_pleasure(Ps, T, K, _, P), games1(Ps, T, T, K, Gs, P).
@@ -15,10 +11,13 @@ find_max([X|L], M) :- find_max(L, K), max1(K, X, M).
 max1(X, Y, X) :- X >= Y.
 max1(X, Y, Y) :- X < Y.
 
-/*Kanw iterate ti lista me tis euxaristiseis, kai me ti voitheia tou one_between, pairnw
- *ola ta pithana paiksimata pou mpooroun na ginoun ana paixnidi, opote kai proxwraw parakatw.
- *Exw sumperilavei eidikes periptwseis gia tin periptwsi pou i euxaristisi einai arnhtiki, wste to paixnidi
- *na paizete mia mono fora
+/*Iteration of the pleasure list.
+ *one_between gives us all the possible plays of a game, and given this we
+ *continue to the next game, having either max coins or coins in relation to the
+ *previous play, on the box
+ *
+ *Case 1: Negative pleasure -> game's played once
+ *Case 2: Non-negative pleasure -> game's played twice
  */
 games1([X], T, C, _, [1], Px) :- X < 0, Px is X.
 games1([X], T, C, _, [Ti], Px) :- X >= 0, one_between(1, C, Ti), Px is X * Ti.
