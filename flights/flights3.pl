@@ -97,7 +97,7 @@ flights(I, Pairings, Cost) :-
 	get_flight_data(I, N, PairingList, CostList),
 	length(PairingList, PLength),
 	var_def(VPairings, PLength, N, FPairings),
-	constraints(N, VPairings, PairingList),
+	constraints(VPairings, PairingList, FPairings, N),
 	cost_def(VPairings, CostList, CostL),
 	Cost #= sum(CostL),
 	bb_min(search(VPairings, 0, first_fail, indomain, complete, []), Cost, _),
@@ -109,27 +109,45 @@ var_def(VPairings, PLength, N, FPairings) :-
 	VPairings #:: 0..1,
 	FPairings #:: 0..N.
 
+/*If a flight is a member of a previous selected pairing,
+ *it shouldn't be selected again.
+ *The union of the selected pairings has to be the same
+ *as the set of flights from 1 to N
+ */
 
-/*A flight must be selected exactly once from the pairings it belongs to,
-*which means that the values of the variables of the pairings containing it
-*should sum to 1
-*/
-constraints(1, Pairings, PairingList) :-
-  flightbelongsto(1, Pairings, PairingList, BelongsTO),
-  sum(BelongsTO) #= 1.
-constraints(N, Pairings, PairingList) :-
-  flightbelongsto(N, Pairings, PairingList, BelongsTO),
-  sum(BelongsTO) #= 1,
-  Z is N - 1,
-  constraints(Z, Pairings, PairingList).
+constraints(Pairings, PairingList, NFlightPairings, N) :-
+	constraints1(Pairings, PairingList),
+	constraints2(Pairings, PairingList, NFlightPairings),
+	sum(NFlightPairings) #= N.
 
-/*collects the pairing variables of the pairings on which a given flight belongs, at the BelongsTO list*/
-flightbelongsto(_, [], [], []).
-flightbelongsto(N, [Pairing|Pairings], [PairingFlights|PairingList], [Pairing|BelongsTO]) :-
-  member(N, PairingFlights), !,
-  flightbelongsto(N, Pairings, PairingList, BelongsTO).
-flightbelongsto(N, [Pairing|Pairings], [PairingFlights|PairingList], BelongsTO) :-
-  flightbelongsto(N, Pairings, PairingList, BelongsTO).
+/*If a pairing is selected, then the pairings containing one of its flights have to be excluded*/
+constraints1([], []).
+constraints1([Pairing|VarPairings], [PairingFlights|PairingList]) :-
+	fflight(Pairing, PairingFlights, VarPairings, PairingList),
+	constraints1(VarPairings, PairingList).
+
+/*for each flight of a given pairing, exclude the other pairings which have the same flight from final selection*/
+fflight(_, [], _, _).
+fflight(Pairing, [Flight|PairingFlights], VarPairings, PairingList) :-
+	excludepairing(Flight, Pairing, VarPairings, PairingList),
+	fflight(Pairing, PairingFlights, VarPairings, PairingList).
+
+excludepairing(_, _, [], []).
+excludepairing(Flight, Pairing, [Pairingx|Pairings], [PairingFlights|PairingList]) :-
+	member(Flight, PairingFlights), !,
+	Pairing #= 1 => Pairingx #= 0,
+	excludepairing(Flight, Pairing, Pairings, PairingList).
+excludepairing(Flight, Pairing, [Pairingx|Pairings], [PairingFlights|PairingList]) :-
+	excludepairing(Flight, Pairing, Pairings, PairingList).
+
+/*if a pairing is selected add to the list NFlightPairings the number of the flights of the corresponding pairing,
+ *else add 0*/
+constraints2([], [], []).
+constraints2([Pairing|VarPairings], [PairingFlights|PairingList], [NFlights|NFlightPairings]) :-
+	length(PairingFlights, N),
+	Pairing #= 1 => NFlights #= N,
+	Pairing #= 0 => NFlights #= 0,
+	constraints2(VarPairings, PairingList, NFlightPairings).
 
 
 cost_def([], [], []).
